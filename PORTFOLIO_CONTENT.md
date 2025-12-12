@@ -23,6 +23,11 @@ The system uses a **Hexagonal Architecture** approach:
 *Challenge*: Keeping logic consistent across Web, Android, and iOS.
 *Solution*: Standardized the WebSocket manager implementation across all three platforms. Created a shared "Protocol Spec" that guided the implementation of the `OkHttp` (Android) and `URLSession` (iOS) networking layers.
 
+### 4. Zero-Dependency Persistence
+*Challenge*: Saving history without requiring users to install Postgres/Docker.
+*Solution*: Integrated `go-sqlite` (pure Go implementation) to provide robust SQL persistence in a single executable binary, automatically managing connection pooling and schema migrations on startup.
+
+
 ## 🚀 Impact & Results
 - **Latency**: Achieved sub-50ms message delivery latency.
 - **Safety**: Automated protection against toxicity with >90% blocking rate for flagged keywords.

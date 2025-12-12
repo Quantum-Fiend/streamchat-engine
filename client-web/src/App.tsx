@@ -1,74 +1,36 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useChatStore } from './store'
 import './App.css'
 
-interface WSMessage {
-  type: string
-  payload: string
-  sender: string
-  room_id: string
-  timestamp: number
-}
-
 function App() {
-  const [messages, setMessages] = useState<WSMessage[]>([])
-  const [inputValue, setInputValue] = useState('')
-  const [isConnected, setIsConnected] = useState(false)
-  const [room, setRoom] = useState('general')
+  const {
+    messages,
+    isConnected,
+    room,
+    connect,
+    sendMessage,
+    setRoom
+  } = useChatStore()
 
-  const ws = useRef<WebSocket | null>(null)
+  const [inputValue, setInputValue] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Connect to WebSocket with Room Query Param
-    const socket = new WebSocket(`ws://localhost:8080/ws?room=${room}`)
-    ws.current = socket
-
-    socket.onopen = () => {
-      console.log(`Connected to ClusterTalk Room: ${room}`)
-      setIsConnected(true)
-    }
-
-    socket.onclose = () => {
-      console.log('Disconnected from WebSocket')
-      setIsConnected(false)
-    }
-
-    socket.onmessage = (event) => {
-      try {
-        const msg: WSMessage = JSON.parse(event.data)
-        setMessages((prev) => [...prev, msg])
-      } catch (e) {
-        console.error("Failed to parse message", event.data)
-      }
-    }
-
-    return () => {
-      socket.close()
-    }
-  }, [room]) // Reconnect if room changes
+    connect(room)
+  }, []) // Initial connection
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const sendMessage = () => {
-    if (!inputValue.trim() || !ws.current) return
-
-    const msg = {
-      type: "message",
-      payload: inputValue,
-      room_id: room,
-      // Sender ID is handled by server for security usually, but we send it for now if needed, 
-      // though server overrides it in current implementation.
-      sender: "me"
-    }
-
-    ws.current.send(JSON.stringify(msg))
+  const handleSend = () => {
+    if (!inputValue.trim()) return
+    sendMessage(inputValue)
     setInputValue('')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') sendMessage()
+    if (e.key === 'Enter') handleSend()
   }
 
   return (
@@ -82,10 +44,7 @@ function App() {
         <div className="room-selector">
           <select
             value={room}
-            onChange={(e) => {
-              setMessages([]); // Clear chat on room switch
-              setRoom(e.target.value);
-            }}
+            onChange={(e) => setRoom(e.target.value)}
             className="room-select"
           >
             <option value="general"># General</option>
@@ -125,7 +84,7 @@ function App() {
             onKeyDown={handleKeyDown}
             disabled={!isConnected}
           />
-          <button className="send-btn" onClick={sendMessage} disabled={!isConnected}>
+          <button className="send-btn" onClick={handleSend} disabled={!isConnected}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="22" y1="2" x2="11" y2="13"></line>
               <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>

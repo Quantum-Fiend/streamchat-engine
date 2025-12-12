@@ -46,8 +46,10 @@ graph TD
 
 - **🚀 High-Performance Core**: Go-based event loop using lightweight goroutines handling thousands of concurrent connections.
 - **🛡️ AI-Powered Moderation**: Real-time toxicity detection using a Python Microservice. Automatically censors spam and offensive content before broadcast.
+- **💾 SQLite Persistence**: ACID-compliant chat history storage using a pure Go driver. Replays recent messages upon joining a room.
 - **📊 Rust Analytics**: Zero-overhead event ingestion pipeline implemented in Rust for analyzing chat throughput.
 - **🌐 Multi-Room Clustering**: logical partitioning of chat streams (`#general`, `#tech`, `#random`).
+
 - **📱 Cross-Platform Architecture**: Unified protocol supporting Web, Android, and iOS clients.
 - **🎨 Cyberpunk UI**: Modern, glassmorphism-based interface with responsive design.
 
