@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pydantic
+requests
+# transformers  <-- Commented out to avoid massive download on first run, enabling 'mock' first
+# torch
