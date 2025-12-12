@@ -4,11 +4,18 @@ import (
 	"log"
 	"net/http"
 
+	"net/http"
+
+	"cluster-talk-backend/internal/db"
 	"cluster-talk-backend/internal/websocket"
 )
 
 func main() {
+	// Init Database
+	db.InitDB()
+
 	hub := websocket.NewHub()
+
 	go hub.Run()
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
